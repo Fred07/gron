@@ -168,9 +168,9 @@ func (c *Cron) run(ctx context.Context) error {
 				c.wg.Add(1)
 				go entry.Job.Run(&c.wg)
 			}
-		case sig := <-ctx.Done():
+		case <-ctx.Done():
 			c.stopAndWait()
-			return fmt.Errorf("Interrupt by signal: %s", sig)
+			return fmt.Errorf("Cron stopping by parent goroutine")
 		case e := <-c.add:
 			e.Next = e.Schedule.Next(time.Now())
 			c.entries = append(c.entries, e)
